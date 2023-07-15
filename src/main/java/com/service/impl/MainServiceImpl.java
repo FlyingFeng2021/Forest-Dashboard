@@ -6,10 +6,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.common.MyHashMap;
 import com.dto.UserDto;
 import com.entity.*;
-import com.mapper.MainMapper;
 import com.service.MainService;
 import lombok.extern.slf4j.Slf4j;
-import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -26,11 +24,9 @@ import java.util.*;
 @Slf4j
 public class MainServiceImpl implements MainService {
 
-    @Autowired
-    private MainMapper mapper;
+
 
     Boolean isLogin = false;
-    Boolean databaseInited=false;
     String token;
     String userId;
 
@@ -57,7 +53,6 @@ public class MainServiceImpl implements MainService {
             MyHashMap myHashMap = new MyHashMap();
             JSONArray tag_objs = JSONArray.parseArray(JSONObject.parseObject(tag_res.getBody()).getString("tags"));
             String[] tagArray = new String[50];
-            if(!databaseInited)mapper.delData();
             if (tag_objs != null) {
                 for (int i = 0; i < tag_objs.size(); i++) {
                     String title = tag_objs.getJSONObject(i).get("title").toString();
@@ -84,9 +79,6 @@ public class MainServiceImpl implements MainService {
                         detailsData.setStart_time(startTime);
                         detailsData.setEnd_time(endTime);
                         detailsData.setTime(time);
-                        if(!databaseInited){
-                            mapper.initData(detailsData);
-                        }
                     } catch (ParseException e) {
                         e.printStackTrace();
                     }
@@ -97,7 +89,6 @@ public class MainServiceImpl implements MainService {
                     plants.setName(tagArray[key]);
                     plantsList.add(plants);
                 });
-                if(!databaseInited)databaseInited=true;
             } else return null;
         } else return null;
         return plantsList;
@@ -135,16 +126,7 @@ public class MainServiceImpl implements MainService {
         } else return null;
     }
 
-    @Override
-    public List<DetailsData> page(QueryInfo queryInfo) {
-        int pageStart = (queryInfo.getPageNum() - 1) * 7;
-        return mapper.page(pageStart, queryInfo.getPageSize());
-    }
 
-    @Override
-    public int getTotal() {
-        return mapper.getTotal();
-    }
 
     @Override
     public String login(User user) {

@@ -29,16 +29,6 @@ public class MainController {
     }
 
 
-    @GetMapping("/page")
-    public List<DetailsData> page(QueryInfo queryInfo){
-        return mainService.page(queryInfo);
-    }
-
-    @GetMapping("/total")
-    public int getTotal(){
-        return mainService.getTotal();
-    }
-
     @PostMapping("/login")
     public String login(@RequestBody User user){
         return mainService.login(user);

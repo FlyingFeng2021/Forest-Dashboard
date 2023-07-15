@@ -10,10 +10,6 @@ public interface MainService {
 
     public Details getUserDetails();
 
-    public List<DetailsData> page(QueryInfo queryInfo);
-
-    public int getTotal();
-
     public String login(User user);
 
     public Boolean isLogin();
