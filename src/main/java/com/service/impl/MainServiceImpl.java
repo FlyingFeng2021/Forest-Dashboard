@@ -25,7 +25,6 @@ import java.util.*;
 public class MainServiceImpl implements MainService {
 
 
-
     Boolean isLogin = false;
     String token;
     String userId;
@@ -102,7 +101,7 @@ public class MainServiceImpl implements MainService {
         headers.set("Cookie", tokenStr);
         headers.set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36 Edg/114.0.1823.67");
         HttpEntity<String> res = restTemplate
-                .exchange("https://forest-china.upwardsware.com/api/v1/users/"+userId+"?seekrua=extension_chrome-5.12.0"
+                .exchange("https://forest-china.upwardsware.com/api/v1/users/" + userId + "?seekrua=extension_chrome-5.12.0"
                         , HttpMethod.GET, new HttpEntity<>(null, headers),
                         String.class);
         Object objs = JSON.parse(res.getBody());
@@ -127,12 +126,11 @@ public class MainServiceImpl implements MainService {
     }
 
 
-
     @Override
     public String login(User user) {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
-        UserDto userDto=new UserDto();
+        UserDto userDto = new UserDto();
         userDto.setSession(user);
         headers.set("Content-Type", "application/json");
         headers.set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36 Edg/114.0.1823.67");
@@ -147,7 +145,7 @@ public class MainServiceImpl implements MainService {
                 System.out.println(res.getBody());
                 token = login_res.getString("remember_token");
                 isLogin = true;
-                userId=login_res.getString("user_id");
+                userId = login_res.getString("user_id");
                 return "获取token成功";
             }
         } catch (Exception e) {
@@ -161,5 +159,13 @@ public class MainServiceImpl implements MainService {
     @Override
     public Boolean isLogin() {
         return isLogin;
+    }
+
+    @Override
+    public String logout() {
+        isLogin = false;
+        userId = null;
+        token = null;
+        return "ok";
     }
 }

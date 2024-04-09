@@ -13,4 +13,7 @@ public interface MainService {
     public String login(User user);
 
     public Boolean isLogin();
+
+    String logout();
 }
+

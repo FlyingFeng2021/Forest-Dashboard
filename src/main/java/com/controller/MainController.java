@@ -38,4 +38,7 @@ public class MainController {
     public Boolean isLogin(){
         return mainService.isLogin();
     }
+
+    @GetMapping("/logout")
+    public String logout(){return mainService.logout();}
 }
