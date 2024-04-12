@@ -28,6 +28,7 @@ public class MainServiceImpl implements MainService {
     Boolean isLogin = false;
     String token;
     String userId;
+    String[] tagArray = new String[50];
 
     @Override
     public List<Plants> getAllTrees() {
@@ -39,7 +40,6 @@ public class MainServiceImpl implements MainService {
             String tokenStr = "remember_token=" + token;
             headers.set("Cookie", tokenStr);
             headers.set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36 Edg/114.0.1823.67");
-            // 注意几个请求参数
             HttpEntity<String> res = restTemplate
                     .exchange("https://forest-china.upwardsware.com/api/v1/plants?seekrua=extension_chrome-5.12.0&from_date=1970-01-01T00:00:00.000Z"
                             , HttpMethod.GET, new HttpEntity<>(null, headers),
@@ -51,7 +51,6 @@ public class MainServiceImpl implements MainService {
             JSONArray objs = JSONArray.parseArray(res.getBody());
             MyHashMap myHashMap = new MyHashMap();
             JSONArray tag_objs = JSONArray.parseArray(JSONObject.parseObject(tag_res.getBody()).getString("tags"));
-            String[] tagArray = new String[50];
             if (tag_objs != null) {
                 for (int i = 0; i < tag_objs.size(); i++) {
                     String title = tag_objs.getJSONObject(i).get("title").toString();
@@ -71,7 +70,7 @@ public class MainServiceImpl implements MainService {
                         Date endDay = dft.parse(endTime);//结束时间
                         Long starTime = start.getTime();
                         Long endtime = endDay.getTime();
-                        int time = (int) ((endtime - starTime) / 60 / 1000);//时间戳相差的毫秒数
+                        int time = (int) ((endtime - starTime) / 60 / 1000);
                         myHashMap.put(tag, time);
                         DetailsData detailsData = new DetailsData();
                         detailsData.setTag(tagArray[tag]);
@@ -167,5 +166,38 @@ public class MainServiceImpl implements MainService {
         userId = null;
         token = null;
         return "ok";
+    }
+
+    @Override
+    public List<PlantsDetail> getPlantsDetail() {
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders requestHeaders = new HttpHeaders();
+        HttpHeaders headers = new HttpHeaders();
+        String tokenStr = "remember_token=" + token;
+        headers.set("Cookie", tokenStr);
+        headers.set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36 Edg/114.0.1823.67");
+        HttpEntity<String> res = restTemplate
+                .exchange("https://forest-china.upwardsware.com/api/v1/plants?seekrua=extension_chrome-5.12.0&from_date=1970-01-01T00:00:00.000Z"
+                        , HttpMethod.GET, new HttpEntity<>(null, headers),
+                        String.class);
+        JSONArray objs = JSONArray.parseArray(res.getBody());
+        List<PlantsDetail> plantsDetails=new ArrayList<>();
+        if (objs != null) {
+            for (int i = 0; i < objs.size(); i++) {
+                String startTime = objs.getJSONObject(i).get("start_time").toString();
+                String endTime = objs.getJSONObject(i).get("end_time").toString();
+                String isSucceed = objs.getJSONObject(i).get("is_success").toString();
+                int tag = objs.getJSONObject(i).getIntValue("tag");
+                boolean is_succeed = isSucceed.equals("true");
+                PlantsDetail plantsDetail = new PlantsDetail();
+                plantsDetail.setStart_time(startTime);
+                plantsDetail.setEnd_time(endTime);
+                plantsDetail.setSucceed(is_succeed);
+                plantsDetail.setTag(tagArray[tag]);
+                plantsDetail.setId(i+1);
+                plantsDetails.add(plantsDetail);
+            }
+            return plantsDetails;
+        } else return null;
     }
 }

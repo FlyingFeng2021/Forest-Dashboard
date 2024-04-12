@@ -41,4 +41,7 @@ public class MainController {
 
     @GetMapping("/logout")
     public String logout(){return mainService.logout();}
+
+    @GetMapping("/getPlantsDetail")
+    public List<PlantsDetail> getPlantsdetail(){return mainService.getPlantsDetail();}
 }

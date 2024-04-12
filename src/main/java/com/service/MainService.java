@@ -15,5 +15,7 @@ public interface MainService {
     public Boolean isLogin();
 
     String logout();
+
+    public List<PlantsDetail> getPlantsDetail();
 }
 
